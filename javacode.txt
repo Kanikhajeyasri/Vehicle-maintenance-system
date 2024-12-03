@@ -1,0 +1,124 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+// Data Model for Vehicle
+class Vehicle {
+    private String vehicleName;
+    private String maintenanceDate;
+    private String description;
+
+    public Vehicle(String vehicleName, String maintenanceDate, String description) {
+        this.vehicleName = vehicleName;
+        this.maintenanceDate = maintenanceDate;
+        this.description = description;
+    }
+
+    public String getVehicleName() {
+        return vehicleName;
+    }
+
+    public String getMaintenanceDate() {
+        return maintenanceDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return vehicleName + " - " + maintenanceDate + " - " + description;
+    }
+}
+
+// Main Application
+public class VehicleMaintenanceSystem extends JFrame {
+    private ArrayList<Vehicle> vehicles = new ArrayList<>();
+    private DefaultListModel<String> listModel = new DefaultListModel<>();
+    private JList<String> vehicleList = new JList<>(listModel);
+
+    public VehicleMaintenanceSystem() {
+        setTitle("Vehicle Maintenance System");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Top Panel for Form Input
+        JPanel topPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JLabel nameLabel = new JLabel("Vehicle Name:");
+        JTextField nameField = new JTextField();
+        JLabel dateLabel = new JLabel("Maintenance Date:");
+        JTextField dateField = new JTextField();
+        JLabel descLabel = new JLabel("Description:");
+        JTextField descField = new JTextField();
+        JButton addButton = new JButton("Add Vehicle");
+
+        topPanel.add(nameLabel);
+        topPanel.add(nameField);
+        topPanel.add(dateLabel);
+        topPanel.add(dateField);
+        topPanel.add(descLabel);
+        topPanel.add(descField);
+        topPanel.add(new JLabel()); // Empty space
+        topPanel.add(addButton);
+
+        // Center Panel for Vehicle List
+        JScrollPane listScrollPane = new JScrollPane(vehicleList);
+
+        // Bottom Panel for Actions
+        JPanel bottomPanel = new JPanel();
+        JButton removeButton = new JButton("Remove Selected");
+        bottomPanel.add(removeButton);
+
+        // Add Panels to Frame
+        add(topPanel, BorderLayout.NORTH);
+        add(listScrollPane, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        // Add Button Action Listener
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                String date = dateField.getText();
+                String description = descField.getText();
+
+                if (!name.isEmpty() && !date.isEmpty() && !description.isEmpty()) {
+                    Vehicle vehicle = new Vehicle(name, date, description);
+                    vehicles.add(vehicle);
+                    listModel.addElement(vehicle.toString());
+
+                    nameField.setText("");
+                    dateField.setText("");
+                    descField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(null, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        // Remove Button Action Listener
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedIndex = vehicleList.getSelectedIndex();
+                if (selectedIndex != -1) {
+                    vehicles.remove(selectedIndex);
+                    listModel.remove(selectedIndex);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No vehicle selected!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            VehicleMaintenanceSystem app = new VehicleMaintenanceSystem();
+            app.setVisible(true);
+        });
+    }
+}
